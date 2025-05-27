@@ -29,7 +29,7 @@ int main(){
     std::cout<<res1.l_out<<" "<<res2.l_out<<" "<<res3.l_out<<" "<<res4.l_out;
     return 0;
 */
-    // —— 1. 硬編初始條件 —— 
+    // —— 1. 初始條件 —— 
     const int    width          = 1000;
     const int    height         = 1000;
     const double fovDeg         = 100.0;
@@ -46,14 +46,14 @@ int main(){
     const int    threads        = omp_get_max_threads();
     const std::string outCsv    = "result.csv";
     
-    // —— 2. 初始化模組 —— 
+    // —— 2. —— 
     Camera   cam(width, height, fovDeg);
     cam.lookAt(eye, lookAt, upVec);
 
     Geodesic geo(whLength, whMass, whThroatRadius);
 
-    // 緩衝空間
-    // —— 3. 緩衝空間：phi、l、dirX、dirY、dirZ —— 
+    // 
+    // —— 3. Buffer：phi、l、dirX、dirY、dirZ —— 
     std::vector<double> phiBuf (width * height);
     std::vector<double> thetaBuf (width * height);
     std::vector<double> lBuf   (width * height);
@@ -61,7 +61,7 @@ int main(){
     const double wUnit = 2.0 / width;
     const double hUnit = 2.0 / height;
 
-    // —— 3. 平行渲染與數據累積 —— 
+    // —— 3.  —— 
     omp_set_num_threads(threads);
     #pragma omp parallel for
     for(int row=0; row<height; ++row) {
@@ -86,7 +86,6 @@ int main(){
                 //std::cout <<std::setprecision(2)<< std::fixed<<"("<<dir.x<<","<<dir.y<<","<<dir.z<<") ";
                 //std::cout <<std::setprecision(2)<< std::fixed<<"("<<dirCam.x<<","<<dirCam.y<<","<<dirCam.z<<") ";
    
-                // 赤道面映射
                 auto res = geo.traceEquatorial(origin.x, origin.y, origin.z, dir.x, dir.y, dir.z);
                 accPhi += res.phi_out;
                 acctheta += res.theta_out;
@@ -106,7 +105,7 @@ int main(){
         //std::cout<<std::endl;
     }
 
-    // —— 5. 批次寫入 CSV (含 dx,dy,dz) —— 
+    // —— 5.CSV  —— 
     std::ofstream ofs(outCsv);
     if(!ofs) {
         std::cerr << "無法建立 " << outCsv << "\n";
