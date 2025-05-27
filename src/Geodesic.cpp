@@ -4,7 +4,6 @@
 #include <cmath>
 #include <iostream>
 
-// 更精确的 π 常量
 static constexpr double PI = 3.141592653589793238462643383279502884197169399375105820974;
 
 Geodesic::Geodesic(double length, double mass, double throatRadius)
@@ -18,20 +17,17 @@ TraceResult Geodesic::traceEquatorial(
     const double h     = 0.01;    // step size
     const int    steps = 5000;   // RK4 steps
 
-    // 初始光线坐标和四动量
     double l     = std::sqrt(x*x + y*y + z*z);
     double theta = PI / 2.0;
     double phi   = std::atan2(y, x);   // 四象限 atan2
 
     bool outside = std::abs(l) > m_length;
 
-    // 计算那个线性变量 X，避免遮蔽参数 x
     double X = 2.0 * (std::abs(l) - m_length) / (PI * m_mass);
     double r = m_rho + (outside
         ? m_mass * (X * std::atan(X) - 0.5 * std::log(1 + X*X))
         : 0.0);
 
-    // 初始方向分量（归一化后传进来，此处仅重分配）
     double n_l      = dirx;
     double n_theta  = -dirz;
     double n_phi    = diry;
@@ -42,7 +38,6 @@ TraceResult Geodesic::traceEquatorial(
     double B_sqr    = p_theta0*p_theta0+p_phi * p_phi;
     double b        = p_phi;
 
-    // 状态向量 y = { l, θ, φ, p_l, p_θ }
     double yState[5] = { l, theta, phi, p_l0, p_theta0 };
     double t = 0.0;
 
@@ -60,7 +55,7 @@ TraceResult Geodesic::traceEquatorial(
         t += h;
     }
 
-    // 返回最终的 {l, θ, φ, p_l, p_θ}
+    // {l, θ, φ, p_l, p_θ}
     return { yState[0], yState[1], yState[2], yState[3], yState[4] };
 }
 
