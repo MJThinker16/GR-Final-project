@@ -23,13 +23,11 @@ Matrix4x4 Matrix4x4::operator*(const Matrix4x4& o) const {
 }
 
 Matrix4x4 Matrix4x4::inverse() const {
-    // 假設為仿射矩陣，分離 R (3x3) 和 t
     Matrix4x4 inv = identity();
-    // 轉置前3x3作為逆
+
     for(int i = 0; i < 3; ++i)
         for(int j = 0; j < 3; ++j)
             inv.m[i][j] = m[j][i];
-    // 平移分量
     Vector4 t{m[0][3], m[1][3], m[2][3], 1.0};
     // inv translation = -R^T * t
     Vector4 t2 = {0,0,0,0};
